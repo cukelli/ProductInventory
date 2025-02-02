@@ -19,4 +19,8 @@ public class ProductService {
     public long getTotalProductsCount() {
         return productRepository.count();
     }
+
+    public List<ProductEntity> getAllProducts() {
+        return productRepository.getAllProducts();
+    }
 }

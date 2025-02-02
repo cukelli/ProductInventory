@@ -16,7 +16,7 @@ public class CategoryEntity extends PanacheEntityBase {
     @Column(name = "name")
     public String name;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "categoryEntity", cascade = CascadeType.ALL)
     public List<ProductEntity> products;
 
     public String getName() {

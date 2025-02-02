@@ -18,16 +18,17 @@ public class ProductEntity extends PanacheEntityBase {
     private String description;
 
     @Column(name = "price")
-    private double price;
+    private Double price;
 
     @Column(name = "quantity")
-    private int quantity;
+    private Integer quantity;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private CategoryEntity categoryEntity;
 
-    public ProductEntity(String name, String description, double price, int quantity) {
+    public ProductEntity(UUID id, String name, String description, double price, int quantity) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;

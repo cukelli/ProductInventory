@@ -19,4 +19,8 @@ public class ProductRepository implements PanacheRepository<ProductEntity> {
         return findAll().page(Page.of(pageIndex, pageSize)).list();
     }
 
+    public List<ProductEntity> getAllProducts() {
+        return listAll();
+    }
+
 }

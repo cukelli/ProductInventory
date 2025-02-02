@@ -1,6 +1,5 @@
 package util;
 
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +15,13 @@ public class ResponseUtil {
         response.put("currentPage", page);
         response.put("pageSize", size);
         response.put("totalPages", totalPages);
+        return Response.ok(response).build();
+    }
+
+    public static <T> Response createResponse(String message, T data) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", message);
+        response.put("data", data);
         return Response.ok(response).build();
     }
 }

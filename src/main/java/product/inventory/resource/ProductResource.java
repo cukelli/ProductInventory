@@ -16,13 +16,16 @@ public class ProductResource {
 
     @Inject
     ProductService productService;
-
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getProducts(@QueryParam("page") int page,
-                                @QueryParam("size") int size) {
+    public Response getProducts(@QueryParam("page") Integer page,
+                                              @QueryParam("size") Integer size) {
+        if (page == null || size == null) {
+            List<ProductEntity> allProducts = productService.getAllProducts();
+            return ResponseUtil.createResponse("All products retrieved successfully", allProducts);
+        }
         List<ProductEntity> products = productService.getPagedProducts(page, size);
         long totalItems = productService.getTotalProductsCount();
         return ResponseUtil.createPaginatedResponse(products, totalItems, page, size);
     }
+
 }
