@@ -1,22 +1,40 @@
 package product.inventory.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-
+import jakarta.persistence.*;
 import java.util.UUID;
 
+@Entity
 public class ProductEntity extends PanacheEntityBase {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "price")
     private double price;
+
+    @Column(name = "quantity")
     private int quantity;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private CategoryEntity categoryEntity;
 
     public ProductEntity(String name, String description, double price, int quantity) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.quantity = quantity;
+    }
+
+    public ProductEntity() {
     }
 
     public String getName() {

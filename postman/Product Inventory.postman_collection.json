@@ -1,0 +1,33 @@
+{
+	"info": {
+		"_postman_id": "6a891662-3f4b-4ad2-af21-3cddb75f38f2",
+		"name": "Product Inventory",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27124326"
+	},
+	"item": [
+		{
+			"name": "products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/products",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
