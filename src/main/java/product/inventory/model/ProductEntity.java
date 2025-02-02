@@ -2,8 +2,11 @@ package product.inventory.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
+import java.util.UUID;
+
 public class ProductEntity extends PanacheEntityBase {
 
+    private UUID id;
     private String name;
     private String description;
     private double price;
@@ -48,10 +51,19 @@ public class ProductEntity extends PanacheEntityBase {
         this.quantity = quantity;
     }
 
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "ProductEntity{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", quantity=" + quantity +
