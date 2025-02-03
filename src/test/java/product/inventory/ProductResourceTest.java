@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
+import product.inventory.model.CategoryEntity;
 import product.inventory.model.ProductEntity;
 import product.inventory.resource.ProductResource;
 import java.util.UUID;
@@ -22,8 +23,8 @@ public class ProductResourceTest {
     private AutoCloseable closeable;
 
     public static ProductEntity generateProductEntity() {
-        ProductEntity mockEntity = new ProductEntity(UUID.randomUUID(),"name", "description", 122.23, 3 );
-        return mockEntity;
+        return new ProductEntity(UUID.randomUUID(),"name", "description",
+                122.23, 3, new CategoryEntity());
     }
 
     @BeforeEach
@@ -33,7 +34,7 @@ public class ProductResourceTest {
 
     @Test
     @DisplayName("Get all products successfully")
-    void testGetAllProductsWithPagination() {
+    void testGetAllProducts() {
         Response response = productResource.getProducts(2, 4);
         Assertions.assertEquals(200, response.getStatus());
         Assertions.assertTrue(response.hasEntity());

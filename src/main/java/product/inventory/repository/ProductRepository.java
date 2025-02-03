@@ -23,4 +23,8 @@ public class ProductRepository implements PanacheRepository<ProductEntity> {
         return listAll();
     }
 
+    public boolean deleteProduct(UUID productId) {
+        return delete("id = ?1", productId) > 0;
+    }
+
 }
