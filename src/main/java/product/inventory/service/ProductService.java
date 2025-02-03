@@ -44,4 +44,18 @@ public class ProductService {
         productRepository.persistAndFlush(productEntity);
         return productEntity;
     }
+
+    public Optional<ProductEntity> getProductById(UUID productId) {
+        return productRepository.findProductEntityById(productId);
+    }
+
+    public boolean deleteProduct(UUID productId) {
+        Optional<ProductEntity> productEntity = productRepository.findProductEntityById(productId);
+        if (productEntity.isPresent()) {
+            productRepository.deleteProduct(productEntity.get().getId());
+            return true;
+        }
+        return false;
+    }
+
 }
