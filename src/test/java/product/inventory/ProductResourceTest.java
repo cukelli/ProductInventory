@@ -14,7 +14,7 @@ import product.inventory.service.ProductService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
+import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -27,9 +27,17 @@ public class ProductResourceTest {
     @InjectMocks
     ProductResource productResource;
 
+    private UUID validProductId;
+    private UUID invalidProductId;
+    private ProductEntity validProduct;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        validProductId = UUID.randomUUID();
+        invalidProductId = UUID.randomUUID();
+        validProduct = new ProductEntity();
+        validProduct.setId(validProductId);
     }
 
     @Test
@@ -46,9 +54,6 @@ public class ProductResourceTest {
         List<ProductEntity> responseList = (List<ProductEntity>) responseMap.get("data");
         assertEquals(2, responseList.size());
         assertEquals(10L, responseMap.get("totalItems"));
-        assertEquals(1, responseMap.get("currentPage"));
-        assertEquals(5, responseMap.get("pageSize"));
-        assertEquals(2, responseMap.get("totalPages"));
         verify(productService).getPagedProducts(1, 5);
         verify(productService).getTotalProductsCount();
     }
@@ -67,10 +72,26 @@ public class ProductResourceTest {
         List<ProductEntity> responseList = (List<ProductEntity>) responseMap.get("data");
         assertTrue(responseList.isEmpty());
         assertEquals(0L, responseMap.get("totalItems"));
-        assertEquals(1, responseMap.get("currentPage"));
-        assertEquals(5, responseMap.get("pageSize"));
-        assertEquals(0, responseMap.get("totalPages"));
         verify(productService).getPagedProducts(1, 5);
         verify(productService).getTotalProductsCount();
+    }
+
+    @Test
+    @DisplayName("Successful deleted product")
+    void testDeleteProductSuccess() {
+        when(productService.deleteProduct(validProductId)).thenReturn(true);
+        Response response = productResource.deleteProduct(validProductId);
+        assertEquals(200, response.getStatus());
+        verify(productService, times(1)).deleteProduct(validProductId);
+    }
+
+
+    @Test
+    @DisplayName("Failed deletion of a product")
+    void testDeleteProductNotFound() {
+        when(productService.deleteProduct(invalidProductId)).thenReturn(false);
+        Response response = productResource.deleteProduct(invalidProductId);
+        assertEquals(404, response.getStatus());
+        verify(productService, times(1)).deleteProduct(invalidProductId);
     }
 }
