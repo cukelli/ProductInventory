@@ -1,11 +1,14 @@
 package validation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RequestValidator {
 
-    public static List<String> validateGetAllProductsRequest(Integer page, Integer size, String sortBy, String order) {
+    public static Map<String, Object> validateGetAllProductsRequest(Integer page, Integer size, String sortBy, String order) {
+        Map<String, Object> response = new HashMap<>();
         List<String> errorMessages = new ArrayList<>();
 
         if (page != null && size != null) {
@@ -31,7 +34,12 @@ public class RequestValidator {
             }
         }
 
-        return errorMessages;
+        if (!errorMessages.isEmpty()) {
+            response.put("errors", errorMessages);
+            return response;
+        }
+
+        return response;
     }
 }
 

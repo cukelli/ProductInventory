@@ -11,8 +11,8 @@ import product.inventory.service.CategoryService;
 import product.inventory.service.ProductService;
 import util.ResponseUtil;
 import validation.RequestValidator;
-
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,7 +36,7 @@ public class ProductResource {
                                 @QueryParam("minPrice") Double minPrice,
                                 @QueryParam("maxPrice") Double maxPrice) {
 
-        List<String> validationErrors = RequestValidator.validateGetAllProductsRequest(page, size, sortBy, order);
+        Map<String, Object> validationErrors = RequestValidator.validateGetAllProductsRequest(page, size, sortBy, order);
 
         if (!validationErrors.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity(validationErrors).build();
