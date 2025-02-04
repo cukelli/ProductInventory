@@ -44,11 +44,12 @@ public class ProductResourceTest {
         validId = UUID.randomUUID();
         invalidId = UUID.randomUUID();
         validRequestBody = new ProductRequestBody("Product Name", "Description", 10, 100.00, validId);
-        invalidRequestBody = validRequestBody;
-        invalidRequestBody.setCategoryEntity(invalidId);
+        invalidRequestBody = new ProductRequestBody("Product Name", "Description", 10, 100.00, invalidId);
+        ;
         mockCategory = new CategoryEntity(validId, "Category", null);
         ProductEntity validProduct = new ProductEntity(validId, "Product Name", "Description", 100.0, 10, mockCategory);
         when(productService.createProduct(validRequestBody)).thenReturn(validProduct);
+        when(productService.updateProduct(validId, validRequestBody)).thenReturn(Optional.of(validProduct));
         when(categoryService.getCategoryById(validId)).thenReturn(Optional.of(mockCategory));
         when(categoryService.getCategoryById(invalidId)).thenReturn(Optional.empty());
         when(productService.getProductById(validId)).thenReturn(Optional.of(validProduct));
@@ -59,9 +60,9 @@ public class ProductResourceTest {
     @DisplayName("Get all products")
     void testGetAllProducts() {
         List<ProductEntity> mockProducts = List.of(new ProductEntity(), new ProductEntity());
-        when(productService.getPagedProducts(1, 5, "name", "asc")).thenReturn(mockProducts);
+        when(productService.getPagedProducts(1, 5, "name", "asc", "", 0.0, null)).thenReturn(mockProducts);
         when(productService.getTotalProductsCount()).thenReturn(10L);
-        Response response = productResource.getProducts(1, 5, "name", "asc");
+        Response response = productResource.getProducts(1, 5, "name", "asc", "", 0.0, null);
         assertEquals(200, response.getStatus());
         assertTrue(response.hasEntity());
         Map<String, Object> responseMap = (Map<String, Object>) response.getEntity();
@@ -69,7 +70,7 @@ public class ProductResourceTest {
         List<ProductEntity> responseList = (List<ProductEntity>) responseMap.get("data");
         assertEquals(2, responseList.size());
         assertEquals(10L, responseMap.get("totalItems"));
-        verify(productService).getPagedProducts(1, 5, "name", "asc");
+        verify(productService).getPagedProducts(1, 5, "name", "asc", "", 0.0, null);
         verify(productService).getTotalProductsCount();
     }
 
@@ -77,9 +78,9 @@ public class ProductResourceTest {
     @DisplayName("Get no products")
     void testGetNoProducts() {
         List<ProductEntity> mockProducts = Collections.emptyList();
-        when(productService.getPagedProducts(1, 5, "name", "asc")).thenReturn(mockProducts);
+        when(productService.getPagedProducts(1, 5, "name", "asc", null, 0.0, null)).thenReturn(mockProducts);
         when(productService.getTotalProductsCount()).thenReturn(0L);
-        Response response = productResource.getProducts(1, 5, "name", "asc");
+        Response response = productResource.getProducts(1, 5, "name", "asc", null, 0.0, null);
         assertEquals(200, response.getStatus());
         assertTrue(response.hasEntity());
         Map<String, Object> responseMap = (Map<String, Object>) response.getEntity();
@@ -87,7 +88,7 @@ public class ProductResourceTest {
         List<ProductEntity> responseList = (List<ProductEntity>) responseMap.get("data");
         assertTrue(responseList.isEmpty());
         assertEquals(0L, responseMap.get("totalItems"));
-        verify(productService).getPagedProducts(1, 5, "name", "asc");
+        verify(productService).getPagedProducts(1, 5, "name", "asc", null, 0.0, null);
         verify(productService).getTotalProductsCount();
     }
 
@@ -145,5 +146,21 @@ public class ProductResourceTest {
     void testCreateProductFailed() {
         Response response = productResource.createProduct(invalidRequestBody);
         assertEquals(400, response.getStatus());
+    }
+
+    @Test
+    @DisplayName("Update product failed")
+    void testUpdateProductFailed() {
+        Response response = productResource.updateProduct(invalidId, invalidRequestBody);
+        assertEquals(400, response.getStatus());
+    }
+
+    @Test
+    @DisplayName("Update product created")
+    void testUpdateProductCreated() {
+        Response response = productResource.updateProduct(validId, validRequestBody);
+        ProductEntity updatedProduct = (ProductEntity) response.getEntity();
+        assertEquals(validRequestBody.getName(), updatedProduct.getName());
+        assertEquals(200, response.getStatus());
     }
 }

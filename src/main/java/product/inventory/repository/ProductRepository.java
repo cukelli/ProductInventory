@@ -17,15 +17,14 @@ public class ProductRepository implements PanacheRepository<ProductEntity> {
         return find("id", id).firstResultOptional();
     }
 
-    public List<ProductEntity> findProductsWithPagination(int pageIndex, int pageSize, String sortBy, String order) {
+    public List<ProductEntity> findProductsWithPagination(int pageIndex, int pageSize, String sortBy, String order, String name, Double minPrice, Double maxPrice) {
         Sort sort = getSort(sortBy, order);
-        return findAll(sort).page(Page.of(pageIndex, pageSize)).list();
+        return find("name like ?1 and price >= ?2 and price <= ?3", sort, "%" + (name != null ? name : "") + "%",
+                minPrice != null ? minPrice : 0.0, maxPrice != null ? maxPrice : Double.MAX_VALUE)
+                .page(Page.of(pageIndex, pageSize))
+                .list();
     }
 
-    public List<ProductEntity> getAllProductsSorted(String sortBy, String order) {
-        Sort sort = getSort(sortBy, order);
-        return findAll(sort).list();
-    }
 
     private Sort getSort(String sortBy, String order) {
         boolean isAscending = "asc".equalsIgnoreCase(order);

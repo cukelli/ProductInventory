@@ -31,7 +31,10 @@ public class ProductResource {
     public Response getProducts(@QueryParam("page") Integer page,
                                 @QueryParam("size") Integer size,
                                 @QueryParam("sortBy") String sortBy,
-                                @QueryParam("order") String order) {
+                                @QueryParam("order") String order,
+                                @QueryParam("name") String name,
+                                @QueryParam("minPrice") Double minPrice,
+                                @QueryParam("maxPrice") Double maxPrice) {
 
         List<String> validationErrors = RequestValidator.validateGetAllProductsRequest(page, size, sortBy, order);
 
@@ -40,14 +43,14 @@ public class ProductResource {
         }
 
         if (page != null && size != null) {
-            List<ProductEntity> products = productService.getPagedProducts(page, size, sortBy, order);
+            List<ProductEntity> products = productService.getPagedProducts(page, size, sortBy, order, name, minPrice, maxPrice);
             long totalItems = productService.getTotalProductsCount();
             return ResponseUtil.createPaginatedResponse(products, totalItems, page, size);
         }
 
         List<ProductEntity> allProducts = (sortBy != null)
-                ? productService.getAllProductsSorted(sortBy, order)
-                : productService.getAllProducts();
+                ? productService.getAllProductsSorted(sortBy, order, name, minPrice, maxPrice)
+                : productService.getAllProducts(name, minPrice, maxPrice);
 
         return ResponseUtil.createResponse("All products retrieved successfully", allProducts);
     }
@@ -56,7 +59,7 @@ public class ProductResource {
     public Response createProduct(ProductRequestBody productRequestBody) {
         if (productRequestBody.getCategoryEntity() != null) {
             Optional<CategoryEntity> category = categoryService.getCategoryById(productRequestBody.getCategoryEntity());
-            if (category.isEmpty()){
+            if (category.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Category is not valid.").build();
             }
         }
@@ -90,7 +93,7 @@ public class ProductResource {
     public Response updateProduct(@PathParam("id") UUID productId, ProductRequestBody updatedProduct) {
         if (updatedProduct.getCategoryEntity() != null) {
             Optional<CategoryEntity> category = categoryService.getCategoryById(updatedProduct.getCategoryEntity());
-            if (category.isEmpty()){
+            if (category.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Category is not valid.").build();
             }
         }

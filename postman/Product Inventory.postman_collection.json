@@ -15,7 +15,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/product?page=0&size=5&sortBy=name&order=desc",
+							"raw": "localhost:8080/product?page=0&size=5&sortBy=name&order=desc&name=string&minPrice=0&maxPrice=0.9",
 							"host": [
 								"localhost"
 							],
@@ -39,6 +39,18 @@
 								{
 									"key": "order",
 									"value": "desc"
+								},
+								{
+									"key": "name",
+									"value": "string"
+								},
+								{
+									"key": "minPrice",
+									"value": "0"
+								},
+								{
+									"key": "maxPrice",
+									"value": "0.9"
 								}
 							]
 						}
@@ -52,7 +64,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"string\",\r\n  \"description\": \"string\",\r\n  \"price\": 0.1,\r\n  \"quantity\": 107,\r\n   \"categoryEntity\": \"8d390c08-ca91-4bfc-bc35-217925509098\"\r\n\r\n}",
+							"raw": "{\r\n  \"name\": \"string\",\r\n  \"description\": \"string\",\r\n  \"price\": 0.5,\r\n  \"quantity\": 107,\r\n   \"categoryEntity\": \"daf89543-2989-44bd-8cef-db44cdebfc25\"\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

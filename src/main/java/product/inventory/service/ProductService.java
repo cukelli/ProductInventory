@@ -22,20 +22,20 @@ public class ProductService {
     @Inject
     CategoryService categoryService;
 
-    public List<ProductEntity> getPagedProducts(int pageIndex, int pageSize, String sortBy, String order) {
-        return productRepository.findProductsWithPagination(pageIndex, pageSize, sortBy, order);
+    public List<ProductEntity> getPagedProducts(int pageIndex, int pageSize, String sortBy, String order, String name, Double minPrice, Double maxPrice) {
+        return productRepository.findProductsWithPagination(pageIndex, pageSize, sortBy, order, name, minPrice, maxPrice);
     }
 
     public long getTotalProductsCount() {
         return productRepository.count();
     }
 
-    public List<ProductEntity> getAllProductsSorted(String sortBy, String order) {
-        return productRepository.getAllProductsSorted(sortBy, order);
+    public List<ProductEntity> getAllProductsSorted(String sortBy, String order, String name, Double minPrice, Double maxPrice) {
+        return productRepository.findProductsWithPagination(0, Integer.MAX_VALUE, sortBy, order, name, minPrice, maxPrice);
     }
 
-    public List<ProductEntity> getAllProducts() {
-        return productRepository.getAllProducts();
+    public List<ProductEntity> getAllProducts(String name, Double minPrice, Double maxPrice) {
+        return productRepository.findProductsWithPagination(0, Integer.MAX_VALUE, "name", "desc", name, minPrice, maxPrice);
     }
 
     public ProductEntity createProduct(ProductRequestBody productRequestBody) {
