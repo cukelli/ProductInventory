@@ -44,7 +44,8 @@ public class ProductResourceTest {
         validId = UUID.randomUUID();
         invalidId = UUID.randomUUID();
         validRequestBody = new ProductRequestBody("Product Name", "Description", 10, 100.00, validId);
-        invalidRequestBody = new ProductRequestBody("", "", -2,-2D, invalidId);
+        invalidRequestBody = validRequestBody;
+        invalidRequestBody.setCategoryEntity(invalidId);
         mockCategory = new CategoryEntity(validId, "Category", null);
         ProductEntity validProduct = new ProductEntity(validId, "Product Name", "Description", 100.0, 10, mockCategory);
         when(productService.createProduct(validRequestBody)).thenReturn(validProduct);
@@ -139,12 +140,10 @@ public class ProductResourceTest {
         verify(productService).createProduct(validRequestBody);
     }
 
-//    @Test
-//    @DisplayName("Create product failed")
-//    void testCreateProductFailed() {
-//        System.out.println(invalidRequestBody.getName());
-//        Response response = productResource.createProduct(invalidRequestBody);
-//        assertEquals(500, response.getStatus());
-//        verify(productService).createProduct(invalidRequestBody);
-//    }
+    @Test
+    @DisplayName("Create product failed")
+    void testCreateProductFailed() {
+        Response response = productResource.createProduct(invalidRequestBody);
+        assertEquals(400, response.getStatus());
+    }
 }

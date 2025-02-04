@@ -85,7 +85,7 @@ public class ProductService {
 
         if (updateProductBody.getCategoryEntity() != null) {
             Optional<CategoryEntity> category = categoryService.getCategoryById(updateProductBody.getCategoryEntity());
-            category.ifPresent(existingProduct::setCategoryEntity);
+            existingProduct.setCategoryEntity(category.get());
         }
         try {
             productRepository.updateProduct(existingProduct);

@@ -5,7 +5,9 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import product.inventory.model.CategoryEntity;
 import product.inventory.model.ProductEntity;
+import product.inventory.service.CategoryService;
 import product.inventory.service.ProductService;
 import util.ResponseUtil;
 import validation.RequestValidator;
@@ -22,6 +24,8 @@ public class ProductResource {
     @Inject
     ProductService productService;
 
+    @Inject
+    CategoryService categoryService;
 
     @GET
     public Response getProducts(@QueryParam("page") Integer page,
@@ -50,6 +54,13 @@ public class ProductResource {
 
     @POST
     public Response createProduct(ProductRequestBody productRequestBody) {
+        if (productRequestBody.getCategoryEntity() != null) {
+            Optional<CategoryEntity> category = categoryService.getCategoryById(productRequestBody.getCategoryEntity());
+            if (category.isEmpty()){
+                return Response.status(Response.Status.BAD_REQUEST).entity("Category is not valid.").build();
+            }
+        }
+
         ProductEntity createdProduct = productService.createProduct(productRequestBody);
         return Response.ok(createdProduct).build();
     }
@@ -77,6 +88,12 @@ public class ProductResource {
     @PUT
     @Path("/{id}")
     public Response updateProduct(@PathParam("id") UUID productId, ProductRequestBody updatedProduct) {
+        if (updatedProduct.getCategoryEntity() != null) {
+            Optional<CategoryEntity> category = categoryService.getCategoryById(updatedProduct.getCategoryEntity());
+            if (category.isEmpty()){
+                return Response.status(Response.Status.BAD_REQUEST).entity("Category is not valid.").build();
+            }
+        }
         Optional<ProductEntity> updatedEntity = productService.updateProduct(productId, updatedProduct);
         if (updatedEntity.isPresent()) {
             return Response.ok(updatedEntity.get()).build();
