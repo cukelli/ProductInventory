@@ -2,8 +2,7 @@ package product.inventory.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 
 import java.util.UUID;
@@ -13,24 +12,21 @@ public class ProductEntity extends PanacheEntityBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @NotNull
     private UUID id;
 
     @Column(name = "name")
-    @NotNull
+    @NotEmpty
     private String name;
 
-    @NotNull
     @Column(name = "description")
+    @NotEmpty
     private String description;
 
     @Positive
-    @NotNull
     @Column(name = "price")
     private Double price;
 
     @Positive
-    @NotNull
     @Column(name = "quantity")
     private Integer quantity;
 
@@ -38,6 +34,8 @@ public class ProductEntity extends PanacheEntityBase {
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private CategoryEntity categoryEntity;
 
+    @Version
+    private int version;
 
     public ProductEntity(UUID id, String name, String description, Double price, Integer quantity, CategoryEntity categoryEntity) {
         this.id = id;
@@ -47,7 +45,9 @@ public class ProductEntity extends PanacheEntityBase {
         this.quantity = quantity;
         this.categoryEntity = categoryEntity;
     }
-    public ProductEntity() {}
+
+    public ProductEntity() {
+    }
 
     public UUID getId() {
         return id;
@@ -97,6 +97,14 @@ public class ProductEntity extends PanacheEntityBase {
         this.categoryEntity = categoryEntity;
     }
 
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
     @Override
     public String toString() {
         return "ProductEntity{" +
@@ -105,7 +113,7 @@ public class ProductEntity extends PanacheEntityBase {
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", quantity=" + quantity +
-                ", categoryEntity=" + categoryEntity.getId()+
+                ", categoryEntity=" + categoryEntity.getId() +
                 '}';
     }
 }

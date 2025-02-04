@@ -1,6 +1,6 @@
 package product.inventory.service;
 
-import dto.CreateCategoryRequestBody;
+import dto.category.CreateCategoryRequestBody;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;

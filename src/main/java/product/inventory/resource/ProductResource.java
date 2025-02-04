@@ -1,6 +1,6 @@
 package product.inventory.resource;
 
-import dto.CreateProductRequestBody;
+import dto.product.ProductRequestBody;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -10,12 +10,11 @@ import product.inventory.service.ProductService;
 import util.ResponseUtil;
 import validation.RequestValidator;
 
-import javax.xml.validation.Validator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Path("/products")
+@Path("/product")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProductResource {
@@ -50,8 +49,8 @@ public class ProductResource {
     }
 
     @POST
-    public Response createProduct(CreateProductRequestBody createProductRequestBody) {
-        ProductEntity createdProduct = productService.createProduct(createProductRequestBody);
+    public Response createProduct(ProductRequestBody productRequestBody) {
+        ProductEntity createdProduct = productService.createProduct(productRequestBody);
         return Response.ok(createdProduct).build();
     }
 
@@ -73,5 +72,16 @@ public class ProductResource {
             return Response.ok().build();
         }
         return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    public Response updateProduct(@PathParam("id") UUID productId, ProductRequestBody updatedProduct) {
+        Optional<ProductEntity> updatedEntity = productService.updateProduct(productId, updatedProduct);
+        if (updatedEntity.isPresent()) {
+            return Response.ok(updatedEntity.get()).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).entity("Product not found").build();
+        }
     }
 }

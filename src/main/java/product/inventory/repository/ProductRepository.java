@@ -49,4 +49,8 @@ public class ProductRepository implements PanacheRepository<ProductEntity> {
         return delete("id = ?1", productId) > 0;
     }
 
+    public void updateProduct(ProductEntity productEntity) {
+        persistAndFlush(productEntity);
+    }
+
 }

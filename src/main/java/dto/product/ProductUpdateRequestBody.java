@@ -1,10 +1,6 @@
-package dto;
+package dto.product;
 
-import jakarta.persistence.Column;
-
-import java.util.UUID;
-
-public class CreateProductRequestBody {
+public class ProductUpdateRequestBody {
 
     private String name;
 
@@ -14,17 +10,15 @@ public class CreateProductRequestBody {
 
     private Integer quantity;
 
-    private UUID categoryEntity;
-
-    public CreateProductRequestBody(String name, String description, Integer quantity, Double price, UUID categoryEntity) {
+    public ProductUpdateRequestBody(String name, String description, Double price, Integer quantity) {
         this.name = name;
         this.description = description;
-        this.quantity = quantity;
         this.price = price;
-        this.categoryEntity = categoryEntity;
+        this.quantity = quantity;
     }
 
-    public CreateProductRequestBody() {}
+    public ProductUpdateRequestBody() {
+    }
 
     public String getName() {
         return name;
@@ -56,13 +50,5 @@ public class CreateProductRequestBody {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public UUID getCategoryEntity() {
-        return categoryEntity;
-    }
-
-    public void setCategoryEntity(UUID categoryEntity) {
-        this.categoryEntity = categoryEntity;
     }
 }

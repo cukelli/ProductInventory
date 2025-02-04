@@ -3,6 +3,7 @@ package product.inventory.model;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +21,16 @@ public class CategoryEntity extends PanacheEntityBase {
 
     @OneToMany(mappedBy = "categoryEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ProductEntity> products;
+
+    public CategoryEntity(UUID id, String name, List<ProductEntity> products) {
+        this.id = id;
+        this.name = name;
+        this.products = products;
+    }
+
+    public CategoryEntity() {
+    }
+
 
     public UUID getId() {
         return id;

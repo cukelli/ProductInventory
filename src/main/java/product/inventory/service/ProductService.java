@@ -1,6 +1,6 @@
 package product.inventory.service;
 
-import dto.CreateProductRequestBody;
+import dto.product.ProductRequestBody;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -38,14 +38,14 @@ public class ProductService {
         return productRepository.getAllProducts();
     }
 
-    public ProductEntity createProduct(CreateProductRequestBody createProductRequestBody) {
+    public ProductEntity createProduct(ProductRequestBody productRequestBody) {
         ProductEntity productEntity = new ProductEntity();
-        Optional<CategoryEntity> category = categoryService.getCategoryById(createProductRequestBody.getCategoryEntity());
+        Optional<CategoryEntity> category = categoryService.getCategoryById(productRequestBody.getCategoryEntity());
         category.ifPresent(productEntity::setCategoryEntity);
-        productEntity.setName(createProductRequestBody.getName());
-        productEntity.setDescription(createProductRequestBody.getDescription());
-        productEntity.setPrice(createProductRequestBody.getPrice());
-        productEntity.setQuantity(createProductRequestBody.getQuantity());
+        productEntity.setName(productRequestBody.getName());
+        productEntity.setDescription(productRequestBody.getDescription());
+        productEntity.setPrice(productRequestBody.getPrice());
+        productEntity.setQuantity(productRequestBody.getQuantity());
         productRepository.persistAndFlush(productEntity);
         return productEntity;
     }
@@ -61,6 +61,38 @@ public class ProductService {
             return true;
         }
         return false;
+    }
+
+    public Optional<ProductEntity> updateProduct(UUID productId, ProductRequestBody updateProductBody) {
+        Optional<ProductEntity> existingProductOpt = productRepository.findProductEntityById(productId);
+
+        if (existingProductOpt.isEmpty()) {
+            return Optional.empty();
+        }
+        ProductEntity existingProduct = existingProductOpt.get();
+
+        if (updateProductBody.getName() != null && !updateProductBody.getName().isEmpty())
+            existingProduct.setName(updateProductBody.getName());
+
+        if (updateProductBody.getDescription() != null && !updateProductBody.getDescription().isEmpty())
+            existingProduct.setDescription(updateProductBody.getDescription());
+
+        if (updateProductBody.getPrice() != null && updateProductBody.getPrice() > 0)
+            existingProduct.setPrice(updateProductBody.getPrice());
+
+        if (updateProductBody.getQuantity() != null && updateProductBody.getQuantity() > 0)
+            existingProduct.setQuantity(updateProductBody.getQuantity());
+
+        if (updateProductBody.getCategoryEntity() != null) {
+            Optional<CategoryEntity> category = categoryService.getCategoryById(updateProductBody.getCategoryEntity());
+            category.ifPresent(existingProduct::setCategoryEntity);
+        }
+        try {
+            productRepository.updateProduct(existingProduct);
+            return Optional.of(existingProduct);
+        } catch (jakarta.persistence.OptimisticLockException e) {
+            throw new RuntimeException("Conflict: Another update occurred on this product. Please refresh and try again.", e);
+        }
     }
 
 }

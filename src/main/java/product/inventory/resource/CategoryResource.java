@@ -1,7 +1,7 @@
 package product.inventory.resource;
 
 
-import dto.CreateCategoryRequestBody;
+import dto.category.CreateCategoryRequestBody;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -10,7 +10,7 @@ import product.inventory.model.CategoryEntity;
 import product.inventory.service.CategoryService;
 import java.util.List;
 
-@Path("/categories")
+@Path("/category")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CategoryResource {

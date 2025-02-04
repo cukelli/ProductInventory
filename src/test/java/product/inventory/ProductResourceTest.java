@@ -1,5 +1,6 @@
 package product.inventory;
 
+import dto.product.ProductRequestBody;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,13 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import product.inventory.model.CategoryEntity;
 import product.inventory.model.ProductEntity;
 import product.inventory.resource.ProductResource;
+import product.inventory.service.CategoryService;
 import product.inventory.service.ProductService;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -24,26 +26,39 @@ public class ProductResourceTest {
     @Mock
     ProductService productService;
 
+    @Mock
+    CategoryService categoryService;
+
     @InjectMocks
     ProductResource productResource;
 
-    private UUID validProductId;
-    private UUID invalidProductId;
+    private ProductRequestBody validRequestBody;
+    private ProductRequestBody invalidRequestBody;
+    private UUID validId;
+    private UUID invalidId;
+    private CategoryEntity mockCategory;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        validProductId = UUID.randomUUID();
-        invalidProductId = UUID.randomUUID();
-        ProductEntity validProduct = new ProductEntity();
-        validProduct.setId(validProductId);
+        validId = UUID.randomUUID();
+        invalidId = UUID.randomUUID();
+        validRequestBody = new ProductRequestBody("Product Name", "Description", 10, 100.00, validId);
+        invalidRequestBody = new ProductRequestBody("", "", -2,-2D, invalidId);
+        mockCategory = new CategoryEntity(validId, "Category", null);
+        ProductEntity validProduct = new ProductEntity(validId, "Product Name", "Description", 100.0, 10, mockCategory);
+        when(productService.createProduct(validRequestBody)).thenReturn(validProduct);
+        when(categoryService.getCategoryById(validId)).thenReturn(Optional.of(mockCategory));
+        when(categoryService.getCategoryById(invalidId)).thenReturn(Optional.empty());
+        when(productService.getProductById(validId)).thenReturn(Optional.of(validProduct));
+        when(productService.getProductById(invalidId)).thenReturn(Optional.empty());
     }
 
     @Test
-    @DisplayName("Get all products successfully (Products found)")
+    @DisplayName("Get all products")
     void testGetAllProducts() {
         List<ProductEntity> mockProducts = List.of(new ProductEntity(), new ProductEntity());
-        when(productService.getPagedProducts(1, 5, "name","asc")).thenReturn(mockProducts);
+        when(productService.getPagedProducts(1, 5, "name", "asc")).thenReturn(mockProducts);
         when(productService.getTotalProductsCount()).thenReturn(10L);
         Response response = productResource.getProducts(1, 5, "name", "asc");
         assertEquals(200, response.getStatus());
@@ -58,7 +73,7 @@ public class ProductResourceTest {
     }
 
     @Test
-    @DisplayName("Get all products successfully (No products found)")
+    @DisplayName("Get no products")
     void testGetNoProducts() {
         List<ProductEntity> mockProducts = Collections.emptyList();
         when(productService.getPagedProducts(1, 5, "name", "asc")).thenReturn(mockProducts);
@@ -78,19 +93,58 @@ public class ProductResourceTest {
     @Test
     @DisplayName("Successful deleted product")
     void testDeleteProductSuccess() {
-        when(productService.deleteProduct(validProductId)).thenReturn(true);
-        Response response = productResource.deleteProduct(validProductId);
+        when(productService.deleteProduct(validId)).thenReturn(true);
+        Response response = productResource.deleteProduct(validId);
         assertEquals(200, response.getStatus());
-        verify(productService, times(1)).deleteProduct(validProductId);
+        verify(productService, times(1)).deleteProduct(validId);
     }
 
 
     @Test
     @DisplayName("Failed deletion of a product")
     void testDeleteProductNotFound() {
-        when(productService.deleteProduct(invalidProductId)).thenReturn(false);
-        Response response = productResource.deleteProduct(invalidProductId);
+        when(productService.deleteProduct(invalidId)).thenReturn(false);
+        Response response = productResource.deleteProduct(invalidId);
         assertEquals(404, response.getStatus());
-        verify(productService, times(1)).deleteProduct(invalidProductId);
+        verify(productService, times(1)).deleteProduct(invalidId);
     }
+
+    @Test
+    @DisplayName("Get product by ID successfully")
+    void testGetProductByIdSuccess() {
+        Response response = productResource.getProductById(validId);
+        assertEquals(200, response.getStatus());
+        assertTrue(response.hasEntity());
+        ProductEntity responseProduct = (ProductEntity) response.getEntity();
+        assertEquals(validId, responseProduct.getId());
+        verify(productService).getProductById(validId);
+    }
+
+    @Test
+    @DisplayName("Get product by ID failed")
+    void testGetProductByIdNotFound() {
+        Response response = productResource.getProductById(invalidId);
+        assertEquals(404, response.getStatus());
+        verify(productService).getProductById(invalidId);
+    }
+
+    @Test
+    @DisplayName("Create product successfully")
+    void testCreateProductSuccess() {
+        Response response = productResource.createProduct(validRequestBody);
+        assertEquals(200, response.getStatus());
+        ProductEntity createdProduct = (ProductEntity) response.getEntity();
+        assertEquals(validRequestBody.getName(), createdProduct.getName());
+        assertEquals(validRequestBody.getPrice(), createdProduct.getPrice());
+        verify(productService).createProduct(validRequestBody);
+    }
+
+//    @Test
+//    @DisplayName("Create product failed")
+//    void testCreateProductFailed() {
+//        System.out.println(invalidRequestBody.getName());
+//        Response response = productResource.createProduct(invalidRequestBody);
+//        assertEquals(500, response.getStatus());
+//        verify(productService).createProduct(invalidRequestBody);
+//    }
 }
