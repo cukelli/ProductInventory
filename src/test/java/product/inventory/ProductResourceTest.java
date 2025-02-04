@@ -29,14 +29,13 @@ public class ProductResourceTest {
 
     private UUID validProductId;
     private UUID invalidProductId;
-    private ProductEntity validProduct;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         validProductId = UUID.randomUUID();
         invalidProductId = UUID.randomUUID();
-        validProduct = new ProductEntity();
+        ProductEntity validProduct = new ProductEntity();
         validProduct.setId(validProductId);
     }
 
@@ -44,9 +43,9 @@ public class ProductResourceTest {
     @DisplayName("Get all products successfully (Products found)")
     void testGetAllProducts() {
         List<ProductEntity> mockProducts = List.of(new ProductEntity(), new ProductEntity());
-        when(productService.getPagedProducts(1, 5)).thenReturn(mockProducts);
+        when(productService.getPagedProducts(1, 5, "name","asc")).thenReturn(mockProducts);
         when(productService.getTotalProductsCount()).thenReturn(10L);
-        Response response = productResource.getProducts(1, 5);
+        Response response = productResource.getProducts(1, 5, "name", "asc");
         assertEquals(200, response.getStatus());
         assertTrue(response.hasEntity());
         Map<String, Object> responseMap = (Map<String, Object>) response.getEntity();
@@ -54,7 +53,7 @@ public class ProductResourceTest {
         List<ProductEntity> responseList = (List<ProductEntity>) responseMap.get("data");
         assertEquals(2, responseList.size());
         assertEquals(10L, responseMap.get("totalItems"));
-        verify(productService).getPagedProducts(1, 5);
+        verify(productService).getPagedProducts(1, 5, "name", "asc");
         verify(productService).getTotalProductsCount();
     }
 
@@ -62,9 +61,9 @@ public class ProductResourceTest {
     @DisplayName("Get all products successfully (No products found)")
     void testGetNoProducts() {
         List<ProductEntity> mockProducts = Collections.emptyList();
-        when(productService.getPagedProducts(1, 5)).thenReturn(mockProducts);
+        when(productService.getPagedProducts(1, 5, "name", "asc")).thenReturn(mockProducts);
         when(productService.getTotalProductsCount()).thenReturn(0L);
-        Response response = productResource.getProducts(1, 5);
+        Response response = productResource.getProducts(1, 5, "name", "asc");
         assertEquals(200, response.getStatus());
         assertTrue(response.hasEntity());
         Map<String, Object> responseMap = (Map<String, Object>) response.getEntity();
@@ -72,7 +71,7 @@ public class ProductResourceTest {
         List<ProductEntity> responseList = (List<ProductEntity>) responseMap.get("data");
         assertTrue(responseList.isEmpty());
         assertEquals(0L, responseMap.get("totalItems"));
-        verify(productService).getPagedProducts(1, 5);
+        verify(productService).getPagedProducts(1, 5, "name", "asc");
         verify(productService).getTotalProductsCount();
     }
 

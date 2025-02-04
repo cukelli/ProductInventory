@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import product.inventory.model.CategoryEntity;
 import product.inventory.model.ProductEntity;
 import product.inventory.repository.ProductRepository;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,12 +22,16 @@ public class ProductService {
     @Inject
     CategoryService categoryService;
 
-    public List<ProductEntity> getPagedProducts(int pageIndex, int pageSize) {
-        return productRepository.findProductsWithPagination(pageIndex, pageSize);
+    public List<ProductEntity> getPagedProducts(int pageIndex, int pageSize, String sortBy, String order) {
+        return productRepository.findProductsWithPagination(pageIndex, pageSize, sortBy, order);
     }
 
     public long getTotalProductsCount() {
         return productRepository.count();
+    }
+
+    public List<ProductEntity> getAllProductsSorted(String sortBy, String order) {
+        return productRepository.getAllProductsSorted(sortBy, order);
     }
 
     public List<ProductEntity> getAllProducts() {

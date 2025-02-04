@@ -8,6 +8,9 @@ import jakarta.ws.rs.core.Response;
 import product.inventory.model.ProductEntity;
 import product.inventory.service.ProductService;
 import util.ResponseUtil;
+import validation.RequestValidator;
+
+import javax.xml.validation.Validator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,14 +26,27 @@ public class ProductResource {
 
     @GET
     public Response getProducts(@QueryParam("page") Integer page,
-                                @QueryParam("size") Integer size) {
-        if (page == null || size == null) {
-            List<ProductEntity> allProducts = productService.getAllProducts();
-            return ResponseUtil.createResponse("All products retrieved successfully", allProducts);
+                                @QueryParam("size") Integer size,
+                                @QueryParam("sortBy") String sortBy,
+                                @QueryParam("order") String order) {
+
+        List<String> validationErrors = RequestValidator.validateGetAllProductsRequest(page, size, sortBy, order);
+
+        if (!validationErrors.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(validationErrors).build();
         }
-        List<ProductEntity> products = productService.getPagedProducts(page, size);
-        long totalItems = productService.getTotalProductsCount();
-        return ResponseUtil.createPaginatedResponse(products, totalItems, page, size);
+
+        if (page != null && size != null) {
+            List<ProductEntity> products = productService.getPagedProducts(page, size, sortBy, order);
+            long totalItems = productService.getTotalProductsCount();
+            return ResponseUtil.createPaginatedResponse(products, totalItems, page, size);
+        }
+
+        List<ProductEntity> allProducts = (sortBy != null)
+                ? productService.getAllProductsSorted(sortBy, order)
+                : productService.getAllProducts();
+
+        return ResponseUtil.createResponse("All products retrieved successfully", allProducts);
     }
 
     @POST
@@ -47,7 +63,6 @@ public class ProductResource {
             return Response.ok(product.get()).build();
         }
         return Response.status(Response.Status.NOT_FOUND).build();
-
     }
 
     @DELETE

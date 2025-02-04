@@ -4,6 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.util.UUID;
 
@@ -23,10 +24,12 @@ public class ProductEntity extends PanacheEntityBase {
     @Column(name = "description")
     private String description;
 
+    @Positive
     @NotNull
     @Column(name = "price")
     private Double price;
 
+    @Positive
     @NotNull
     @Column(name = "quantity")
     private Integer quantity;
